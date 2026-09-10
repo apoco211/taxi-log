@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>택시 운행일지 v34 FINAL - 일간주간월간</title>
+
+<meta name="theme-color" content="#facc15">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+body{font-family:'Noto Sans KR',sans-serif; transition: background 0.3s, color 0.3s;}
+.mic-pulse{animation:micpulse 1.4s infinite}
+@keyframes micpulse{0%{box-shadow:0 0 0 0 rgba(250,204,21,.7)}70%{box-shadow:0 0 0 24px rgba(250,204,21,0)}100%{box-shadow:0 0 0 0 rgba(250,204,21,0)}}
+.mic-recording{background:#ef4444 !important; color:white !important; transform:scale(1.05);}
+.voice-badge-recording{background:#fee2e2; color:#dc2626; border:1px solid #fecaca; animation:badgepulse 1s infinite}
+@keyframes badgepulse{0%,100%{opacity:1}50%{opacity:0.7}}
+
+/* 시안 B - 뉴모피즘 소프트 */
+.neu-card{
+  background:#ffffff;
+  border-radius:20px;
+  box-shadow: 8px 8px 20px rgba(0,0,0,0.06), -8px -8px 20px rgba(255,255,255,0.9);
+  border:1px solid rgba(0,0,0,0.04);
+  transition: all 0.2s;
+}
+.neu-btn{
+  border-radius:18px;
+  font-weight:900;
+  box-shadow: 6px 6px 14px rgba(0,0,0,0.08), -6px -6px 14px rgba(255,255,255,0.9);
+  border:1px solid rgba(0,0,0,0.03);
+  transition: all 0.15s;
+}
+.neu-btn:active{ box-shadow: inset 4px 4px 10px rgba(0,0,0,0.08), inset -4px -4px 10px rgba(255,255,255,0.9); transform: scale(0.98); }
+.neu-btn-yellow{ background:#facc15; color:#000; box-shadow: 6px 6px 14px rgba(250,204,21,0.25), -6px -6px 14px rgba(255,255,255,0.9); }
+.neu-btn-yellow:active{ background:#f5c518; }
+.neu-btn-red{ background:#ef4444; color:#fff; box-shadow: 6px 6px 14px rgba(239,68,68,0.25), -6px -6px 14px rgba(255,255,255,0.9); }
+.neu-btn-gray{ background:#f3f3f0; color:#9ca3af; box-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.9); }
+.neu-tab{ border-radius:16px; box-shadow: 4px 4px 10px rgba(0,0,0,0.05), -4px -4px 10px rgba(255,255,255,0.9); }
+.neu-tab-active{ background:#facc15; box-shadow: 6px 6px 14px rgba(250,204,21,0.3), -6px -6px 14px rgba(255,255,255,0.9); }
+.neu-mic{ background: radial-gradient(circle at 30% 30%, #fde047, #facc15); box-shadow: 0 10px 30px rgba(250,204,21,0.4), 8px 8px 20px rgba(0,0,0,0.08), -8px -8px 20px rgba(255,255,255,0.9); }
+.neu-mic:active{ transform: scale(0.95); box-shadow: 0 6px 20px rgba(250,204,21,0.3), inset 6px 6px 14px rgba(0,0,0,0.1); }
+
+/* 다크모드 */
+.dark body{ background:#0f0f0f !important; color:#e5e5e5; }
+.dark header{ background: rgba(24,24,24,0.9) !important; border-color:#262626 !important; }
+.dark .neu-card{ background:#1e1e1e; box-shadow: 8px 8px 20px rgba(0,0,0,0.5), -8px -8px 20px rgba(255,255,255,0.03); border-color:#262626; }
+.dark .neu-btn{ box-shadow: 6px 6px 14px rgba(0,0,0,0.5), -6px -6px 14px rgba(255,255,255,0.04); border-color:#262626; }
+.dark .neu-btn-gray{ background:#1e1e1e; color:#52525b; }
+.dark .neu-tab{ background:#1e1e1e; box-shadow: 4px 4px 10px rgba(0,0,0,0.5), -4px -4px 10px rgba(255,255,255,0.03); }
+.dark .neu-btn-yellow{ background:#facc15; color:#000; box-shadow: 0 0 20px rgba(250,204,21,0.3), 6px 6px 14px rgba(0,0,0,0.5); }
+.dark .neu-btn-red{ box-shadow: 0 0 20px rgba(239,68,68,0.3), 6px 6px 14px rgba(0,0,0,0.5); }
+.dark .neu-mic{ box-shadow: 0 0 30px rgba(250,204,21,0.4), 8px 8px 20px rgba(0,0,0,0.6); }
+
+/* 다크모드 가독성 개선 v16 fix */
+.dark .bg-white{ background-color:#2a2a2a !important; color:#e5e5e5 !important; }
+.dark .bg-zinc-50{ background-color:#262626 !important; color:#e5e5e5 !important; }
+.dark .bg-zinc-100{ background-color:#27272a !important; color:#e4e4e7 !important; }
+.dark .bg-yellow-50{ background-color:#332e00 !important; border-color:#665c00 !important; color:#fef08a !important; }
+.dark .border-zinc-100{ border-color:#3f3f46 !important; }
+.dark .border{ border-color:#3f3f46 !important; }
+.dark .text-zinc-400{ color:#a1a1aa !important; }
+.dark .text-zinc-500{ color:#a1a1aa !important; }
+.dark .text-zinc-600{ color:#d4d4d8 !important; }
+.dark .text-zinc-900{ color:#e4e4e7 !important; }
+.dark input, .dark select, .dark textarea{ background-color:#27272a !important; color:#f4f4f5 !important; border-color:#3f3f46 !important; }
+.dark input::placeholder, .dark textarea::placeholder{ color:#71717a !important; }
+.dark #logList > div{ background:#262626 !important; border-color:#3a3a3a !important; color:#e5e5e5 !important; }
+.dark #todayMini{ background:#27272a !important; color:#d4d4d8 !important; }
+.dark #sheetStatus{ background:#1e1e1e !important; }
+.dark #voiceStatus{ color:#a1a1aa !important; }
+.dark #voiceTranscript{ color:#fafafa !important; }
+.dark header .bg-zinc-100{ background:#27272a !important; color:#e4e4e7 !important; }
+</style>
+</head>
+<body class="bg-[#fbfaf7] text-zinc-900 pb-28 dark:bg-[#0f0f0f]">
+<header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b px-4 py-3 flex justify-between items-center dark:bg-zinc-900/90 dark:border-zinc-800">
+  <div class="flex items-center gap-2"><div class="w-8 h-8 bg-[#facc15] rounded-xl flex items-center justify-center font-black shadow-[2px_2px_6px_rgba(0,0,0,0.1)]">T</div><div class="font-black text-[15px]">택시 운행일지 <span class="text-[10px] text-zinc-400 ml-1">v34 FINAL</span></div></div>
+  <div class="flex items-center gap-2"><div id="statusBadge" class="text-[11px] px-2.5 py-1 rounded-full bg-zinc-100 font-bold shadow-sm">대기중</div><button onclick="toggleDark()" id="btnDark" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center neu-btn"><i class="fa-solid fa-moon text-[13px]"></i></button><button onclick="openSettings()" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center neu-btn"><i class="fa-solid fa-gear text-[13px]"></i></button></div>
+</header>
+
+<div class="px-4 pt-4 flex gap-2.5 max-w-[440px] mx-auto">
+  <button onclick="switchTab('drive')" id="tab-drive" class="flex-1 py-3 rounded-[16px] font-black text-[14px] neu-tab-active">🎤 운행</button>
+  <button onclick="switchTab('goal')" id="tab-goal" class="flex-1 py-3 rounded-[16px] font-black text-[14px] neu-tab bg-white">🎯 목표</button>
+  <button onclick="switchTab('anal')" id="tab-anal" class="flex-1 py-3 rounded-[16px] font-black text-[14px] neu-tab bg-white">📊 분석</button>
+</div>
+
+<!-- DRIVE -->
+<div id="view-drive" class="px-4 pt-4 space-y-4 max-w-[440px] mx-auto">
+  <div class="grid grid-cols-2 gap-3.5">
+    <button id="btnOpStart" class="h-[64px] neu-btn neu-btn-yellow text-[16px]">▶ 운행시작</button>
+    <button id="btnOpEnd" class="h-[64px] neu-btn neu-btn-gray text-[16px]" disabled>■ 운행종료</button>
+  </div>
+  <div class="grid grid-cols-2 gap-3.5">
+    <button id="btnBoard" class="h-[88px] neu-btn neu-btn-yellow text-[19px] disabled:neu-btn-gray" disabled>탑승<br><span class="text-[11px] font-bold opacity-70">위치·시간 자동</span></button>
+    <button id="btnAlight" class="h-[88px] neu-btn bg-[#3b82f6] text-white text-[19px] disabled:neu-btn-gray" disabled>하차<br><span class="text-[11px] font-bold opacity-70">위치·시간 자동</span></button>
+  </div>
+  <div class="flex flex-col items-center py-6">
+    <button id="btnMic" class="w-[128px] h-[128px] rounded-full neu-mic flex flex-col items-center justify-center active:scale-95 transition-all">
+      <i class="fa-solid fa-microphone text-[34px]"></i><span class="text-[12px] font-black mt-1.5">음성 입력</span>
+    </button>
+    <div id="voiceStatus" class="mt-3 text-[13px] font-bold text-zinc-600">하차 후 금액·추가사항 / 휴식도 같은 버튼</div>
+    <div id="voiceTranscript" class="mt-1 text-center text-[14px] font-bold min-h-[20px]">예: "카드 18000원" / "12시부터 12시반까지 점심"</div>
+  </div>
+
+  <div id="afterForm" class="hidden neu-card p-5 space-y-3">
+    <div class="font-black text-[14px]">✅ 하차 완료 - 금액 입력</div>
+    <div class="grid grid-cols-2 gap-2 text-[11px]"><div class="bg-zinc-50 rounded-xl p-2"><div class="text-zinc-400">탑승</div><div id="fBoard" class="font-bold">-</div></div><div class="bg-zinc-50 rounded-xl p-2"><div class="text-zinc-400">하차</div><div id="fAlight" class="font-bold">-</div></div></div>
+    <div class="grid grid-cols-2 gap-2"><input id="fFare" type="number" inputmode="numeric" placeholder="요금" class="px-4 py-3.5 rounded-xl border-2 border-zinc-100 font-black"><select id="fPay" class="px-4 py-3.5 rounded-xl border-2 border-zinc-100 font-bold"><option>카드</option><option>현금</option><option>카카오페이</option></select></div>
+    <div id="tagChips" class="flex gap-1 flex-wrap"></div>
+    <textarea id="fMemo" rows="2" placeholder="에피소드" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-100 text-[13px]"></textarea>
+    <button id="btnSave" class="w-full py-4 rounded-xl bg-black text-white font-black">확인 후 저장 (시트 자동 백업)</button>
+  </div>
+
+  <div id="restForm" class="hidden neu-card bg-yellow-50/80 border-yellow-200 p-5 space-y-2">
+    <div class="font-black text-[14px]">🍙 휴식 감지</div><div id="restPreview" class="text-[13px] font-bold">-</div>
+    <div class="grid grid-cols-3 gap-2"><select id="restType" class="px-2 py-2 rounded-xl border text-[12px]"><option>휴식</option><option>점심</option><option>저녁</option></select><input id="restStart" type="time" class="px-2 py-2 rounded-xl border text-[12px]"><input id="restEnd" type="time" class="px-2 py-2 rounded-xl border text-[12px]"></div>
+    <button onclick="saveRest()" class="w-full py-3 rounded-xl bg-zinc-900 text-white font-black text-[13px]">휴식 저장 + 시트 백업</button>
+  </div>
+
+  <div class="neu-card p-5"><div class="flex justify-between mb-3"><div class="font-black text-[15px]">오늘 기록</div><div id="todayMini" class="text-[11px] text-zinc-500 font-bold px-2.5 py-1 rounded-full bg-zinc-100">0건</div></div><div id="logList" class="space-y-2"></div></div>
+
+  <div class="neu-card border-dashed bg-zinc-50/50 p-4">
+    <div class="font-bold text-[12px] mb-2">오늘 요약 (하단)</div>
+    <div class="grid grid-cols-4 gap-2 text-center text-[11px]"><div class="bg-white rounded-xl p-2 border"><div class="text-zinc-400">총 운행</div><div id="statTotal" class="font-black">00:00:00</div></div><div class="bg-white rounded-xl p-2 border"><div class="text-zinc-400">유상</div><div id="statRide" class="font-black text-blue-600">0분</div></div><div class="bg-white rounded-xl p-2 border"><div class="text-zinc-400">공차</div><div id="statEmpty" class="font-black text-orange-600">0분</div></div><div class="bg-white rounded-xl p-2 border"><div class="text-zinc-400">휴식</div><div id="statRest" class="font-black">0분</div></div></div>
+  </div>
+
+  <div id="sheetStatus" class="neu-card p-4 flex justify-between items-center text-[11px]"><div><span class="font-bold">구글시트 자동 백업</span> <span id="sheetBadge" class="ml-2 px-2 py-0.5 rounded-full bg-zinc-100">미연결</span><div id="sheetUrlTxt" class="text-zinc-400 mt-1 truncate max-w-[200px]">설정에서 URL 입력</div></div><button onclick="openSettings()" class="px-3 py-1.5 rounded-full bg-zinc-900 text-white font-bold">설정</button></div>
+</div>
+
+<!-- GOAL -->
+<div id="view-goal" class="hidden px-4 pt-4 space-y-4 max-w-[440px] mx-auto">
+  <!-- 시트 연동 - 9월 누적 -->
+  <div class="neu-card p-5 space-y-3 border-2 border-yellow-200 bg-yellow-50/30">
+    <div class="flex justify-between items-center">
+      <div class="font-black text-[15px]">📊 구글시트 연동 - 9월 누적</div>
+      <span id="sheetSyncBadge" class="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-bold">연동됨</span>
+    </div>
+    <div class="text-[11px] text-zinc-500">택시-일차 업적 / 26년9월 탭 / 어제까지 합계 자동 계산</div>
+    <div class="bg-zinc-900 text-white rounded-xl p-3 text-[12px] space-y-1" id="combinedSummary">
+      <div class="flex justify-between"><span>시트 누적(9/9까지)</span><span id="sheetTotalView" class="font-black">1,122,000원 (96건)</span></div>
+      <div class="flex justify-between"><span>앱 오늘 이후 (9/10~)</span><span id="appAfterView" class="font-bold text-yellow-300">0원 (0건)</span></div>
+      <div class="flex justify-between border-t border-zinc-700 pt-1 mt-1"><span class="font-bold">월 합계</span><span id="monthTotalView" class="font-black text-yellow-300">1,122,000원 (96건)</span></div>
+      <div id="goalRemainView" class="text-[11px] text-zinc-400 pt-1"></div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="fetchSheet9()" class="flex-1 py-2.5 rounded-xl bg-white border font-bold text-[12px]">🔄 시트에서 최신 가져오기</button>
+      <span class="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-bold self-center">연동됨</span>
+    </div>
+    <div class="hidden"><input id="sheetTotalInput" type="number" value="1122000"><input id="sheetCountInput" type="number" value="96"></div>
+
+    <div class="text-[10px] text-zinc-400">💡 앱의 오늘(9/10) 이후 기록이 자동으로 합산됩니다. 시트 값은 매일 밤 수동 갱신하거나 '가져오기' 버튼으로 갱신하세요.</div>
+  </div>
+
+  <div class="neu-card p-5 space-y-3">
+    <div class="font-black">월 매출 목표</div>
+    <div class="flex gap-2"><input id="goalInput" type="number" class="flex-1 px-3 py-2.5 rounded-xl border font-bold" value="4000000"><button onclick="saveGoal()" class="px-4 py-2.5 rounded-xl bg-black text-white font-bold text-sm">저장</button></div>
+    <div class="h-3 bg-zinc-100 rounded-full overflow-hidden"><div id="goalBar" class="h-full bg-[#facc15]" style="width:0%"></div></div>
+    <div id="goalText" class="text-[13px] font-bold">-</div>
+  </div>
+  <div class="neu-card p-5 space-y-3">
+    <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleCalendar()">
+      <div class="font-black text-[14px]">📅 휴무일 설정 (달력) <span id="calToggleIcon">▼</span></div>
+      <div class="flex gap-1">
+        <button onclick="changeCalMonth(-1)" class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center font-bold">‹</button>
+        <button onclick="changeCalMonth(1)" class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center font-bold">›</button>
+      </div>
+    </div>
+    <div id="calWrapper"><div id="calMonthTitle" class="font-bold text-[13px] text-center"></div>
+    <div class="flex gap-1 flex-wrap" id="weekOff"></div>
+    <div class="text-[10px] text-zinc-400">매주 반복 휴무: 요일 탭하면 매주 해당 요일이 휴무로 자동 표시</div>
+    <div class="bg-white rounded-xl border overflow-hidden">
+      <div class="grid grid-cols-7 bg-zinc-50 text-[11px] font-bold text-zinc-400 text-center py-2">
+        <div class="text-red-400">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="text-blue-400">토</div>
+      </div>
+      <div id="monthCalendarGrid" class="grid grid-cols-7 gap-[1px] bg-zinc-100"></div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="clearMonthOff()" class="flex-1 py-2 rounded-xl bg-zinc-100 font-bold text-[12px]">이번 달 해제</button>
+      <button onclick="selectWeekends()" class="flex-1 py-2 rounded-xl bg-zinc-900 text-white font-bold text-[12px]">주말만 선택</button>
+    </div>
+    </div><button onclick="toggleCalendar()" class="w-full mt-3 py-2.5 rounded-xl bg-zinc-900 text-white font-bold text-[12px]">✕ 캘린더 접기</button>
+    <div id="offDateChips" class="flex gap-1 flex-wrap"></div>
+    <div class="flex gap-2"><input id="offDateInput" type="date" class="flex-1 px-3 py-2 rounded-xl border text-sm hidden"><button onclick="addOffDate()" class="hidden">추가</button></div>
+    <div id="remainCalc" class="bg-zinc-50 rounded-xl p-3 text-[12px]"></div>
+  </div>
+</div>
+
+<!-- ANAL with 일간/주간/월간 -->
+<div id="view-anal" class="hidden px-4 pt-4 space-y-4 max-w-[440px] mx-auto">
+  <div class="flex gap-2.5">
+    <button onclick="switchAnal('daily')" id="anal-daily" class="flex-1 py-3 rounded-[16px] font-black text-[13px] bg-black text-white shadow-lg">일간</button>
+    <button onclick="switchAnal('weekly')" id="anal-weekly" class="flex-1 py-3 rounded-[16px] font-black text-[13px] neu-tab bg-white">주간</button>
+    <button onclick="switchAnal('monthly')" id="anal-monthly" class="flex-1 py-3 rounded-[16px] font-black text-[13px] neu-tab bg-white">월간</button>
+  </div>
+
+  <div id="anal-daily-view" class="space-y-3">
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-2" id="dailyTitle">오늘</div><div id="dailyStats" class="grid grid-cols-2 gap-2 text-[11px]"></div></div>
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-3 flex items-center gap-2">⏰ 시간대별 매출 (오늘)</div><div id="dailyHourBars" class="space-y-1"></div></div>
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-3">⚡ 오늘 효율</div><div id="dailyEff" class="grid grid-cols-3 gap-2 text-[11px]"></div></div>
+  </div>
+
+  <div id="anal-weekly-view" class="hidden space-y-3">
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-2" id="weeklyTitle">이번 주</div><div id="weeklyStats" class="grid grid-cols-2 gap-2 text-[11px]"></div><div id="weeklyBars" class="mt-3 space-y-1"></div></div>
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-2">📈 요일별 효율</div><div id="weeklyEff" class="text-[11px]"></div></div>
+  </div>
+
+  <div id="anal-monthly-view" class="hidden space-y-3">
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-2" id="monthlyTitle">이번 달</div><div id="monthlyStats" class="grid grid-cols-2 gap-2 text-[11px]"></div><div id="monthlyBars" class="mt-3 space-y-1"></div></div>
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-2">📅 주차별 매출</div><div id="monthlyWeekBars" class="space-y-1"></div></div>
+    <div class="neu-card p-5"><div class="font-black text-[13px] mb-2">🏷️ 태그·지역 분석 (월간)</div><div id="monthlyTags" class="text-[11px]"></div></div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div id="settingsModal" class="hidden fixed inset-0 z-30 bg-black/50 flex items-end justify-center">
+  <div class="bg-white w-full max-w-[440px] rounded-t-[24px] p-5 space-y-4 max-h-[85vh] overflow-auto">
+    <div class="flex justify-between items-center"><div class="font-black">설정</div><button onclick="closeSettings()" class="w-8 h-8 rounded-full bg-zinc-100">✕</button></div>
+    <div class="space-y-2"><div class="font-bold text-[13px]">구글시트 웹앱 URL</div><input id="sheetUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2.5 rounded-xl border text-[12px]"><button onclick="saveSheetUrl()" class="w-full py-2.5 rounded-xl bg-black text-white font-bold text-[13px]">저장</button><div id="sheetTestResult" class="text-[11px]"></div></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let logs=JSON.parse(localStorage.getItem('taxi_logs_v6')||localStorage.getItem('taxi_logs_v5')||'[]');
+let restLogs=JSON.parse(localStorage.getItem('rest_logs_v6')||localStorage.getItem('rest_logs_v5')||'[]');
+let monthlyGoal=parseInt(localStorage.getItem('monthly_goal')||'4000000');
+let weeklyOff=JSON.parse(localStorage.getItem('weeklyOff')||'[0]');
+let specificOff=JSON.parse(localStorage.getItem('specificOff')||'[]');
+let calYear=new Date().getFullYear();
+let calMonth=new Date().getMonth();
+let sheetUrl=localStorage.getItem('sheet_webapp_url')||'https://script.google.com/macros/s/AKfycbz44zNZxrDIw_R-gjboRiJzT6eoi-ImHaVChYzj-athLebPYJs6H-wyPuAjtnygzrUh2w/exec';
+// === 구글시트 연동 (택시-일차 업적) ===
+const SHEET_ID='1JMOSPlXWJ3tWW7I2shnFgBdjCyJZ1QfjHW6BQKLfZnY';
+let sheetCumulative=JSON.parse(localStorage.getItem('sheetCumulative')||'{"total":1122000,"count":96,"date":"2026-09-09","detail":"96건 · 9/9까지"}');
+
+function getAppAfterSheetTotal(){
+  // 2026-09-10 이후 앱 로그 합계 (오늘부터)
+  const cutoff='2026-09-10';
+  const after=logs.filter(l=> l.date >= cutoff);
+  return {fare: after.reduce((s,l)=>s+l.fare,0), count: after.length};
+}
+function updateCombinedView(){
+  const sheetTotal=parseInt(document.getElementById('sheetTotalInput')?.value||sheetCumulative.total)||0;
+  const sheetCount=parseInt(document.getElementById('sheetCountInput')?.value||sheetCumulative.count)||0;
+  const app=getAppAfterSheetTotal();
+  const combined=sheetTotal+app.fare;
+  const combinedCount=sheetCount+app.count;
+  const pct=monthlyGoal? Math.min(100, Math.round(combined/monthlyGoal*100)):0;
+  const remain=monthlyGoal-combined;
+  // first card (the only one now)
+  if(document.getElementById('sheetTotalView')) document.getElementById('sheetTotalView').textContent=sheetTotal.toLocaleString()+'원 ('+sheetCount+'건)';
+  if(document.getElementById('appAfterView')) document.getElementById('appAfterView').textContent=app.fare.toLocaleString()+'원 ('+app.count+'건)';
+  if(document.getElementById('monthTotalView')) document.getElementById('monthTotalView').textContent=combined.toLocaleString()+'원 ('+combinedCount+'건)';
+  if(document.getElementById('combinedGoalView')){
+    document.getElementById('combinedGoalView').textContent= `목표 ${monthlyGoal.toLocaleString()}원 중 ${pct}% 달성, 남은 ${remain>0?remain.toLocaleString()+'원':'0원 (달성!)'} / 남은 일수 기준 하루 ${Math.ceil(remain/18).toLocaleString()}원 필요`;
+  }
+  if(document.getElementById('goalRemainView')){
+    document.getElementById('goalRemainView').textContent = remain>0 ? `남은 ${remain.toLocaleString()}원 / 하루 ${Math.ceil(remain/18).toLocaleString()}원 필요` : '🎉 목표 달성!';
+  }
+  if(document.getElementById('sheetDetailTxt')) document.getElementById('sheetDetailTxt').textContent=sheetCumulative.detail;
+  sheetCumulative.total=sheetTotal;
+  sheetCumulative.count=sheetCount;
+  localStorage.setItem('sheetCumulative', JSON.stringify(sheetCumulative));
+  const gb=document.getElementById('goalBar');
+  const gt=document.getElementById('goalText');
+  if(gb) gb.style.width=pct+'%';
+  if(gt) gt.textContent=`[합산] 누적 ${combined.toLocaleString()}원 / 목표 ${monthlyGoal.toLocaleString()}원 (${pct}%) 남은 ${(monthlyGoal-combined).toLocaleString()}원 (시트 ${sheetTotal.toLocaleString()} + 앱 ${app.fare.toLocaleString()})`;
+}
+async function fetchSheet9(){
+  const badge=document.getElementById('sheetSyncBadge');
+  if(badge){ badge.textContent='가져오는 중...'; badge.className='text-[10px] px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 font-bold'; }
+  try{
+    // 시도 1: gviz JSON (CORS 허용될 때)
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=26년9월`;
+    const res=await fetch(url);
+    const txt=await res.text();
+    const jsonStr=txt.substring(txt.indexOf('{'), txt.lastIndexOf('}')+1);
+    const data=JSON.parse(jsonStr);
+    // 달성금액은 7번째 열(인덱스 6) - 표 구조: 날짜,요일,W-day,운전시간,건수,기준금액,달성금액...
+    let total=0, count=0;
+    for(let r of data.table.rows){
+      const c=r.c;
+      if(!c) continue;
+      const fare=c[6]?.v; // 달성금액
+      const cnt=c[4]?.v; // 건수
+      if(typeof fare==='number' && fare>0){ total+=fare; }
+      if(typeof cnt==='number' && cnt>0){ count+=cnt; }
+    }
+    if(total>0){
+      sheetCumulative={total, count, date:new Date().toISOString().slice(0,10), detail: count+'건 · '+new Date().toISOString().slice(5,10)+'까지'};
+      document.getElementById('sheetTotalInput').value=total;
+      document.getElementById('sheetCountInput').value=count;
+      localStorage.setItem('sheetCumulative', JSON.stringify(sheetCumulative));
+      updateCombinedView();
+      if(badge){ badge.textContent='최신 동기화'; badge.className='text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-bold'; }
+      alert('시트에서 가져오기 성공: '+total.toLocaleString()+'원 / '+count+'건');
+      return;
+    }
+    throw new Error('파싱 실패');
+  }catch(e){
+    console.error(e);
+    if(badge){ badge.textContent='수동 입력 필요'; badge.className='text-[10px] px-2 py-1 rounded-full bg-red-100 text-red-700 font-bold'; }
+    alert('자동 가져오기가 브라우저 보안(CORS) 때문에 차단됐어요.\n\n시트에서 9월 탭 합계(어제까지)를 보고 아래 입력칸에 직접 넣어주세요.\n현재 시트는 1,122,000원 / 96건 (9/9까지) 입니다.\n\n시트를 "링크가 있는 모든 사용자"로 공유하면 자동 가져오기가 됩니다.');
+    updateCombinedView();
+  }
+}
+// 입력 변경 시 합산 갱신
+document.addEventListener('input', (e)=>{
+  if(e.target && (e.target.id==='sheetTotalInput' || e.target.id==='sheetCountInput' || e.target.id==='goalInput')){
+    updateCombinedView();
+  }
+});
+
+let opStatus=localStorage.getItem('opStatus')||'idle';
+let sessionStart=localStorage.getItem('sessionStart')?parseInt(localStorage.getItem('sessionStart')):null;
+let lastAlightingTime=localStorage.getItem('lastAlightingTime')?parseInt(localStorage.getItem('lastAlightingTime')):null;
+let curBoard=JSON.parse(localStorage.getItem('curBoard')||'null');
+
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function fmtTime(ts){return new Date(ts).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul',hour12:false});}
+function msToHMS(ms){let s=Math.floor(ms/1000);let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function haversine(lat1,lon1,lat2,lon2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180;const dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function dailyTimeKey(){return 'dailyOpTime_'+todayKey();}
+function getDailyOp(){return parseInt(localStorage.getItem(dailyTimeKey())||'0');}
+function setDailyOp(v){localStorage.setItem(dailyTimeKey(),String(v));}
+function getWeekRange(){let now=new Date(); let day=now.getDay(); let monday=new Date(now); monday.setDate(now.getDate() - ((day+6)%7)); monday.setHours(0,0,0,0); let sunday=new Date(monday); sunday.setDate(monday.getDate()+6); sunday.setHours(23,59,59,999); return {start:monday,end:sunday};}
+function getMonthRange(){let now=new Date(); let start=new Date(now.getFullYear(),now.getMonth(),1); let end=new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59,999); return {start,end};}
+
+setInterval(()=>{let base=getDailyOp(); if(opStatus==='operating'&&sessionStart) base+=Date.now()-sessionStart; const el=$('statTotal'); if(el) el.textContent=msToHMS(base);},1000);
+
+function toggleDark(){ const htmlEl=document.documentElement; const isDark=htmlEl.classList.toggle('dark'); localStorage.setItem('darkMode', isDark?'1':'0'); const btn=document.getElementById('btnDark'); if(btn) btn.innerHTML=isDark?'<i class="fa-solid fa-sun text-[13px]"></i>':'<i class="fa-solid fa-moon text-[13px]"></i>'; }
+(function(){ if(localStorage.getItem('darkMode')==='1'){ document.documentElement.classList.add('dark'); } })();
+function refreshStatus(){
+  let b=$('statusBadge');
+  let btnStart=$('btnOpStart'), btnEnd=$('btnOpEnd'), btnBoard=$('btnBoard'), btnAlight=$('btnAlight');
+  const isDark=document.documentElement.classList.contains('dark'); const dbtn=document.getElementById('btnDark'); if(dbtn) dbtn.innerHTML=isDark?'<i class="fa-solid fa-sun text-[13px]"></i>':'<i class="fa-solid fa-moon text-[13px]"></i>';
+  if(opStatus==='idle'){
+    b.textContent='대기중'; b.className='text-[11px] px-2.5 py-1 rounded-full bg-zinc-100 font-bold shadow-sm';
+    if(btnStart){ btnStart.disabled=false; btnStart.className='h-[64px] neu-btn neu-btn-yellow text-[16px]'; }
+    if(btnEnd){ btnEnd.disabled=true; btnEnd.className='h-[64px] neu-btn neu-btn-gray text-[16px]'; }
+    if(btnBoard){ btnBoard.disabled=true; btnBoard.className='h-[88px] neu-btn neu-btn-gray text-[19px]'; }
+    if(btnAlight){ btnAlight.disabled=true; btnAlight.className='h-[88px] neu-btn neu-btn-gray text-[19px]'; }
+  }
+  else if(opStatus==='operating'||opStatus==='waiting'){
+    b.textContent='운행중'; b.className='text-[11px] px-2.5 py-1 rounded-full bg-green-100 text-green-700 font-bold shadow-sm';
+    if(btnStart){ btnStart.disabled=true; btnStart.className='h-[64px] neu-btn neu-btn-gray text-[16px]'; }
+    if(btnEnd){ btnEnd.disabled=false; btnEnd.className='h-[64px] neu-btn neu-btn-red text-[16px]'; }
+    if(btnBoard){ btnBoard.disabled=false; btnBoard.className='h-[88px] neu-btn neu-btn-yellow text-[19px]'; }
+    if(btnAlight){ btnAlight.disabled=true; btnAlight.className='h-[88px] neu-btn neu-btn-gray text-[19px]'; }
+  }
+  else if(opStatus==='boarding'){
+    b.textContent='탑승중'; b.className='text-[11px] px-2.5 py-1 rounded-full bg-yellow-200 font-bold shadow-sm';
+    if(btnStart){ btnStart.disabled=true; btnStart.className='h-[64px] neu-btn neu-btn-gray text-[16px]'; }
+    if(btnEnd){ btnEnd.disabled=false; btnEnd.className='h-[64px] neu-btn neu-btn-red text-[16px]'; }
+    if(btnBoard){ btnBoard.disabled=true; btnBoard.className='h-[88px] neu-btn neu-btn-gray text-[19px]'; }
+    if(btnAlight){ btnAlight.disabled=false; btnAlight.className='h-[88px] neu-btn bg-[#3b82f6] text-white text-[19px] neu-btn'; }
+  }
+  else if(opStatus==='alighting'){
+    b.textContent='하차처리'; b.className='text-[11px] px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-bold shadow-sm';
+    if(btnStart){ btnStart.disabled=true; btnStart.className='h-[64px] neu-btn neu-btn-gray text-[16px]'; }
+    if(btnEnd){ btnEnd.disabled=false; btnEnd.className='h-[64px] neu-btn neu-btn-red text-[16px]'; }
+    if(btnBoard){ btnBoard.disabled=true; btnBoard.className='h-[88px] neu-btn neu-btn-gray text-[19px]'; }
+    if(btnAlight){ btnAlight.disabled=true; btnAlight.className='h-[88px] neu-btn neu-btn-gray text-[19px]'; }
+  }
+  if($('sheetBadge')){ if(sheetUrl){$('sheetBadge').textContent='연결됨'; $('sheetBadge').className='ml-2 px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold'; $('sheetUrlTxt').textContent=sheetUrl.slice(0,35)+'...';} else {$('sheetBadge').textContent='미연결'; $('sheetBadge').className='ml-2 px-2 py-0.5 rounded-full bg-zinc-100'; $('sheetUrlTxt').textContent='설정에서 URL 입력';}}
+}
+
+function switchTab(t){['drive','goal','anal'].forEach(k=>{$('view-'+k).classList.add('hidden'); const tb=$('tab-'+k); if(tb) tb.className='flex-1 py-3 rounded-[16px] font-black text-[14px] neu-tab bg-white';}); $('view-'+t).classList.remove('hidden'); const atb=$('tab-'+t); if(atb) atb.className='flex-1 py-3 rounded-[16px] font-black text-[14px] neu-tab-active'; if(t==='goal') renderGoal(); if(t==='anal') renderAnalDaily(); if(t==='drive') renderLogs();}
+function switchAnal(t){['daily','weekly','monthly'].forEach(k=>{$('anal-'+k).classList.add('hidden'); $('anal-'+k+'-view').classList.add('hidden'); const ab=$('anal-'+k); if(ab) ab.className='flex-1 py-3 rounded-[16px] font-black text-[13px] neu-tab bg-white';}); const at=$('anal-'+t); if(at) at.className='flex-1 py-3 rounded-[16px] font-black text-[13px] bg-black text-white shadow-lg'; $('anal-'+t+'-view').classList.remove('hidden'); if(t==='daily') renderAnalDaily(); if(t==='weekly') renderAnalWeekly(); if(t==='monthly') renderAnalMonthly();}
+function openSettings(){ $('settingsModal').classList.remove('hidden'); $('sheetUrl').value=sheetUrl; }
+function closeSettings(){ $('settingsModal').classList.add('hidden'); }
+
+async function getPos(){return new Promise((res,rej)=>{ if(!navigator.geolocation) return rej(); navigator.geolocation.getCurrentPosition(p=>res(p),e=>rej(e),{enableHighAccuracy:true,timeout:8000});});}
+async function revGeocode(lat,lon){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`); const j=await r.json(); return j.display_name.split(',').slice(0,3).join(' ');}catch{return `${lat.toFixed(4)},${lon.toFixed(4)}`;}}
+
+$('btnOpStart').onclick=()=>{opStatus='operating'; sessionStart=Date.now(); localStorage.setItem('opStatus',opStatus); localStorage.setItem('sessionStart',String(sessionStart)); refreshStatus(); backupToSheet({date:todayKey(), opStart:new Date().toISOString(), durationMs:0, memo:'운행시작'},'operation');};
+$('btnOpEnd').onclick=()=>{let base=getDailyOp(); if(sessionStart) base+=Date.now()-sessionStart; setDailyOp(base); let dur=sessionStart?Date.now()-sessionStart:0; backupToSheet({date:todayKey(), opStart:new Date().toISOString(), durationMs:dur, memo:'운행종료'},'operation'); opStatus='idle'; sessionStart=null; localStorage.setItem('opStatus',opStatus); localStorage.removeItem('sessionStart'); refreshStatus(); renderLogs();};
+
+$('btnBoard').onclick=async()=>{try{const pos=await getPos(); const lat=pos.coords.latitude, lon=pos.coords.longitude; const addr=await revGeocode(lat,lon); const now=Date.now(); let emptyMs=lastAlightingTime?now-lastAlightingTime:0; curBoard={time:now,lat,lon,addr,emptyMs}; localStorage.setItem('curBoard',JSON.stringify(curBoard)); opStatus='boarding'; localStorage.setItem('opStatus',opStatus); refreshStatus();}catch{curBoard={time:Date.now(),lat:0,lon:0,addr:'수동',emptyMs:lastAlightingTime?Date.now()-lastAlightingTime:0}; localStorage.setItem('curBoard',JSON.stringify(curBoard)); opStatus='boarding'; localStorage.setItem('opStatus',opStatus); refreshStatus();}};
+
+$('btnAlight').onclick=async()=>{
+  try{const pos=await getPos(); const lat=pos.coords.latitude, lon=pos.coords.longitude; const addr=await revGeocode(lat,lon); const now=Date.now(); const rideMs=now-curBoard.time; const dist=curBoard.lat?haversine(curBoard.lat,curBoard.lon,lat,lon):0; $('fBoard').textContent=fmtTime(curBoard.time)+' '+curBoard.addr.slice(0,10); $('fAlight').textContent=fmtTime(now)+' '+addr.slice(0,10); $('afterForm').classList.remove('hidden'); $('afterForm').dataset.alat=lat; $('afterForm').dataset.alon=lon; $('afterForm').dataset.aaddr=addr; $('afterForm').dataset.rideMs=rideMs; $('afterForm').dataset.dist=dist; opStatus='alighting'; localStorage.setItem('opStatus',opStatus); refreshStatus(); startVoice();}
+  catch{const now=Date.now(); const rideMs=now-curBoard.time; $('fBoard').textContent=fmtTime(curBoard.time); $('fAlight').textContent=fmtTime(now); $('afterForm').classList.remove('hidden'); $('afterForm').dataset.alat=0; $('afterForm').dataset.alon=0; $('afterForm').dataset.aaddr='수동'; $('afterForm').dataset.rideMs=rideMs; $('afterForm').dataset.dist=0; opStatus='alighting'; localStorage.setItem('opStatus',opStatus); refreshStatus(); startVoice();}
+};
+
+let selectedTags=[];
+function initTags(){const el=$('tagChips'); if(!el) return; const tags=['#단골','#팁','#진상','#친절','#분실물']; el.innerHTML=tags.map(t=>`<button onclick="toggleTag('${t}')" class="tag px-2 py-1 rounded-full bg-zinc-100 text-[11px] font-bold">${t}</button>`).join('');}
+function toggleTag(t){if(selectedTags.includes(t)) selectedTags=selectedTags.filter(x=>x!==t); else selectedTags.push(t); document.querySelectorAll('.tag').forEach(el=>{el.className=selectedTags.includes(el.textContent)?'tag px-2 py-1 rounded-full bg-[#facc15] text-[11px] font-bold':'tag px-2 py-1 rounded-full bg-zinc-100 text-[11px] font-bold';});}
+initTags();
+
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;
+  let rec=new SR(); rec.lang='ko-KR'; rec.interimResults=true;
+  $('btnMic').classList.add('mic-pulse'); $('voiceStatus').textContent='듣는 중...';
+  rec.onresult=e=>{
+    let txt=''; for(let i=0;i<e.results.length;i++) txt+=e.results[i][0].transcript;
+    $('voiceTranscript').textContent=txt;
+    let m=txt.match(/(\d+)\s*원/); if(m){ const f=$('fFare'); if(f) f.value=m[1]; }
+    if(/카드/.test(txt)){ const p=$('fPay'); if(p) p.value='카드';}
+    if(/현금/.test(txt)){ const p=$('fPay'); if(p) p.value='현금';}
+    if(txt.length>4){ const mm=$('fMemo'); if(mm) mm.value=txt; }
+    let rest=parseRestVoice(txt);
+    if(rest){
+      $('restForm').classList.remove('hidden');
+      $('restPreview').textContent=`${rest.type} ${rest.startH}:${String(rest.startM).padStart(2,'0')} ~ ${rest.endH%24}:${String(rest.endM).padStart(2,'0')}`;
+      $('restType').value=rest.type;
+      $('restStart').value=String(rest.startH).padStart(2,'0')+':'+String(rest.startM).padStart(2,'0');
+      $('restEnd').value=String(rest.endH%24).padStart(2,'0')+':'+String(rest.endM).padStart(2,'0');
+    }
+  };
+  rec.onend=()=>{$('btnMic').classList.remove('mic-pulse'); $('voiceStatus').textContent='인식 완료';};
+  rec.start();
+}
+function parseRestVoice(txt){
+  let type='휴식'; if(/점심|밥|식사/.test(txt)) type='점심'; else if(/저녁/.test(txt)) type='저녁';
+  let m1=txt.match(/(\d{1,2})시(?:\s*(\d{1,2})분)?\s*부터\s*(\d{1,2})시(?:\s*(\d{1,2})분)?\s*까지/);
+  if(m1){let sh=parseInt(m1[1]), sm=parseInt(m1[2]||0), eh=parseInt(m1[3]), em=parseInt(m1[4]||0); if(/반까지/.test(txt)&&!m1[4]) em=30; if(sh<7) sh+=12; if(eh<7) eh+=12; return {type,startH:sh,startM:sm,endH:eh,endM:em};}
+  let m2=txt.match(/(\d{1,2})시부터\s*(\d{1,2})시까지/); if(m2){let sh=parseInt(m2[1]), eh=parseInt(m2[2]); if(sh<7) sh+=12; if(eh<7) eh+=12; return {type,startH:sh,startM:0,endH:eh,endM:0};}
+  return null;
+}
+$('btnMic').onclick=()=>startVoice();
+
+$('btnSave').onclick=()=>{
+  if(!curBoard) return;
+  const alLat=parseFloat($('afterForm').dataset.alat||0), alLon=parseFloat($('afterForm').dataset.alon||0), aAddr=$('afterForm').dataset.aaddr||'', rideMs=parseInt($('afterForm').dataset.rideMs||0), dist=parseFloat($('afterForm').dataset.dist||0);
+  const log={id:Date.now(), date:todayKey(), boardingTime:curBoard.time, alightingTime:Date.now(), boardingAddr:curBoard.addr, alightingAddr:aAddr, boardingLat:curBoard.lat, boardingLng:curBoard.lon, alightingLat:alLat, alightingLng:alLon, rideMs, emptyMs:curBoard.emptyMs, dist, fare:parseInt($('fFare').value||0), pay:$('fPay').value, memo:$('fMemo').value, tags:selectedTags};
+  logs.unshift(log); localStorage.setItem('taxi_logs_v6',JSON.stringify(logs));
+  lastAlightingTime=Date.now(); localStorage.setItem('lastAlightingTime',String(lastAlightingTime));
+  curBoard=null; localStorage.removeItem('curBoard'); selectedTags=[]; initTags();
+  $('afterForm').classList.add('hidden'); $('fFare').value=''; $('fMemo').value='';
+  opStatus='waiting'; localStorage.setItem('opStatus','operating'); refreshStatus(); renderLogs(); renderAnalDaily(); backupToSheet(log,'ride');
+};
+function saveRest(){
+  let type=$('restType').value; let s=$('restStart').value, e=$('restEnd').value; if(!s||!e) return;
+  let [sh,sm]=s.split(':').map(Number); let [eh,em]=e.split(':').map(Number);
+  let start=new Date(); start.setHours(sh,sm,0,0); let end=new Date(); end.setHours(eh,em,0,0); if(end<=start) end.setDate(end.getDate()+1);
+  let rec={id:Date.now(), date:todayKey(), type, start:start.getTime(), end:end.getTime(), startStr:s, endStr:e, durationMs:end-start, memo:type};
+  restLogs.unshift(rec); localStorage.setItem('rest_logs_v6',JSON.stringify(restLogs));
+  $('restForm').classList.add('hidden'); renderLogs(); renderAnalDaily(); backupToSheet(rec,'rest');
+}
+function delLog(id){logs=logs.filter(l=>l.id!==id); localStorage.setItem('taxi_logs_v6',JSON.stringify(logs)); renderLogs(); renderAnalDaily();}
+function delRest(id){restLogs=restLogs.filter(r=>r.id!==id); localStorage.setItem('rest_logs_v6',JSON.stringify(restLogs)); renderLogs();}
+
+function renderLogs(){
+  const today=logs.filter(l=>l.date===todayKey());
+  const restToday=restLogs.filter(r=>r.date===todayKey());
+  let totalFare=today.reduce((s,l)=>s+l.fare,0), totalRide=today.reduce((s,l)=>s+l.rideMs,0), totalEmpty=today.reduce((s,l)=>s+l.emptyMs,0), totalRest=restToday.reduce((s,r)=>s+r.durationMs,0);
+  const sr=$('statRide'), se=$('statEmpty'), srest=$('statRest'), tm=$('todayMini');
+  if(sr) sr.textContent=Math.round(totalRide/60000)+'분'; if(se) se.textContent=Math.round(totalEmpty/60000)+'분'; if(srest) srest.textContent=Math.round(totalRest/60000)+'분'; if(tm) tm.textContent=`${today.length}건 · ${totalFare.toLocaleString()}원`;
+  let html=today.map(l=>`<div class="flex justify-between p-2.5 rounded-xl bg-zinc-50 border text-[11px]"><div><div>${fmtTime(l.boardingTime)}→${fmtTime(l.alightingTime)} · 유상${Math.round(l.rideMs/60000)}분 공차${Math.round(l.emptyMs/60000)}분</div><div class="font-bold">${l.boardingAddr.slice(0,10)}→${l.alightingAddr.slice(0,10)} ${l.fare?l.fare.toLocaleString()+'원':''}</div></div><button onclick="delLog(${l.id})" class="text-red-400">삭제</button></div>`).join('');
+  html+=restToday.map(r=>`<div class="flex justify-between p-2.5 rounded-xl bg-yellow-50 border border-yellow-100 text-[11px]"><div>🍙 ${r.type} ${r.startStr}~${r.endStr} (${Math.round(r.durationMs/60000)}분)</div><button onclick="delRest(${r.id})" class="text-red-400">삭제</button></div>`).join('');
+  const ll=$('logList'); if(ll) ll.innerHTML=html||'<div class="text-center text-[11px] text-zinc-400 py-4">운행시작 → 탑승 → 하차</div>';
+}
+
+
+function renderMonthCalendar(){
+  const titleEl=document.getElementById('calMonthTitle');
+  const gridEl=document.getElementById('monthCalendarGrid');
+  if(!titleEl || !gridEl) return;
+  const firstDay=new Date(calYear, calMonth, 1);
+  const lastDay=new Date(calYear, calMonth+1, 0);
+  const startWeekday=firstDay.getDay();
+  const totalDays=lastDay.getDate();
+  titleEl.textContent=`${calYear}년 ${calMonth+1}월`;
+  let html='';
+  for(let i=0;i<startWeekday;i++){ html+=`<div class="bg-white h-[42px]"></div>`; }
+  const todayStr=new Date().toISOString().slice(0,10);
+  for(let d=1; d<=totalDays; d++){
+    const dateObj=new Date(calYear, calMonth, d);
+    const iso=dateObj.toISOString().slice(0,10);
+    const weekday=dateObj.getDay();
+    const isSpecific=specificOff.includes(iso);
+    const isWeekly=weeklyOff.includes(weekday);
+    const isToday=iso===todayStr;
+    let cls='bg-white h-[42px] flex flex-col items-center justify-center text-[12px] relative cursor-pointer active:scale-95 transition-all';
+    let badge='';
+    if(isSpecific){ cls+=' bg-zinc-900 !text-white font-black rounded-xl'; badge='<div class="text-[8px] mt-0.5">휴무</div>'; }
+    else if(isWeekly){ cls+=' bg-zinc-100 text-zinc-500 rounded-xl'; badge='<div class="text-[8px] mt-0.5 text-zinc-400">매주</div>'; }
+    else { cls+=' hover:bg-yellow-50'; }
+    if(isToday){ cls+=' ring-2 ring-[#facc15] ring-inset'; }
+    let dayColor='';
+    if(weekday===0 && !isSpecific) dayColor=' text-red-500';
+    else if(weekday===6 && !isSpecific) dayColor=' text-blue-500';
+    if(isSpecific) dayColor=' text-white';
+    html+=`<div class="${cls}" onclick="toggleCalDate('${iso}')"><span class="font-bold${dayColor}">${d}</span>${badge}</div>`;
+  }
+  gridEl.innerHTML=html;
+  const chip=document.getElementById('offDateChips');
+  if(chip){
+    const thisMonthOff=specificOff.filter(s=>{ const dt=new Date(s); return dt.getFullYear()===calYear && dt.getMonth()===calMonth; }).sort();
+    chip.innerHTML=thisMonthOff.map(d=>`<span class="px-2.5 py-1 bg-zinc-900 text-white rounded-full text-[11px] font-bold">${d.slice(5)} <button onclick="toggleCalDate('${d}')" class="ml-1">x</button></span>`).join('') + (weeklyOff.length? `<span class="px-2 py-1 bg-zinc-100 rounded-full text-[11px]">매주 ${weeklyOff.map(w=>['일','월','화','수','목','금','토'][w]).join(',')} 휴무</span>` : '');
+  }
+}
+function toggleCalDate(iso){
+  if(specificOff.includes(iso)){ specificOff=specificOff.filter(x=>x!==iso); }
+  else { specificOff.push(iso); }
+  localStorage.setItem('specificOff', JSON.stringify(specificOff));
+  renderMonthCalendar();
+  renderGoalCalcOnly();
+}
+function toggleCalendar(){
+  var w=document.getElementById("calWrapper");
+  var ic=document.getElementById("calToggleIcon");
+  if(!w)return;
+  var isHidden=w.classList.contains("hidden");
+  if(isHidden){
+    w.classList.remove("hidden");
+    if(ic)ic.textContent="▼";
+    localStorage.setItem("calOpen","1");
+  }else{
+    w.classList.add("hidden");
+    if(ic)ic.textContent="▶";
+    localStorage.setItem("calOpen","0");
+  }
+}
+function changeCalMonth(delta){
+  calMonth+=delta;
+  if(calMonth>11){ calMonth=0; calYear++; }
+  if(calMonth<0){ calMonth=11; calYear--; }
+  renderMonthCalendar();
+}
+function clearMonthOff(){
+  specificOff=specificOff.filter(s=>{ const dt=new Date(s); return !(dt.getFullYear()===calYear && dt.getMonth()===calMonth); });
+  localStorage.setItem('specificOff', JSON.stringify(specificOff));
+  renderMonthCalendar();
+  renderGoalCalcOnly();
+}
+function selectWeekends(){
+  const lastDay=new Date(calYear, calMonth+1, 0).getDate();
+  for(let d=1; d<=lastDay; d++){
+    const dt=new Date(calYear, calMonth, d);
+    const wd=dt.getDay();
+    if(wd===0 || wd===6){
+      const iso=dt.toISOString().slice(0,10);
+      if(!specificOff.includes(iso)) specificOff.push(iso);
+    }
+  }
+  localStorage.setItem('specificOff', JSON.stringify(specificOff));
+  renderMonthCalendar();
+  renderGoalCalcOnly();
+}
+function renderGoalCalcOnly(){
+  const now=new Date(); const lastDay=new Date(now.getFullYear(), now.getMonth()+1, 0); const today=new Date(); today.setHours(0,0,0,0);
+  let remain=0, off=0, work=0;
+  for(let d=new Date(today); d<=lastDay; d.setDate(d.getDate()+1)){
+    if(d.getTime()===today.getTime()) continue;
+    remain++;
+    let isOff=weeklyOff.includes(d.getDay())||specificOff.includes(d.toISOString().slice(0,10));
+    if(isOff) off++; else work++;
+  }
+  const sheetTotal=parseInt(document.getElementById('sheetTotalInput')?.value||sheetCumulative?.total||0);
+  const appFare=logs.filter(l=> l.date >= '2026-09-10').reduce((s,l)=>s+l.fare,0);
+  const combined=sheetTotal+appFare;
+  let need=work?Math.ceil((monthlyGoal-combined)/work):0;
+  const rc=document.getElementById('remainCalc');
+  if(rc) rc.innerHTML=`총 남은 ${remain}일 · 휴무 ${off}일 · <b>운행가능 ${work}일</b><br>하루 평균 필요: <b>${need>0?need.toLocaleString()+'원':'달성!'}</b><br><span class="text-[10px] text-zinc-400">달력에서 날짜를 탭하면 휴무로 지정/해제 돼요</span>`;
+}
+function renderGoal(){
+
+  const now=new Date(); const lastDay=new Date(now.getFullYear(),now.getMonth()+1,0); const today=new Date(); today.setHours(0,0,0,0);
+  const monthLogs=logs.filter(l=>{let d=new Date(l.boardingTime); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();});
+  const acc=monthLogs.reduce((s,l)=>s+l.fare,0); const pct=Math.min(100,Math.round(acc/monthlyGoal*100));
+  // 시트+앱 합산 뷰 업데이트 (v17)
+  try{ updateCombinedView(); }catch(e){}
+  const gb=$('goalBar'), gt=$('goalText'); 
+  // gt는 updateCombinedView에서 합산으로 덮어쓰므로 여기서는 폴백만
+  if(gb && !document.getElementById('combinedTotalView')) gb.style.width=pct+'%'; 
+  if(gt && !document.getElementById('combinedTotalView')) gt.textContent=`누적 ${acc.toLocaleString()}원 / 목표 ${monthlyGoal.toLocaleString()}원 (${pct}%) 남은 ${(monthlyGoal-acc).toLocaleString()}원`;
+  let remain=0, off=0, work=0; for(let d=new Date(today); d<=lastDay; d.setDate(d.getDate()+1)){ if(d.getTime()===today.getTime()) continue; remain++; let isOff=weeklyOff.includes(d.getDay())||specificOff.includes(d.toISOString().slice(0,10)); if(isOff) off++; else work++; }
+  let need=work?Math.ceil((monthlyGoal-acc)/work):0;
+  const rc=$('remainCalc'); if(rc) rc.innerHTML=`총 남은 ${remain}일 · 휴무 ${off}일 · <b>운행가능 ${work}일</b><br>하루 평균 필요: <b>${need.toLocaleString()}원</b>`;
+  const woff=$('weekOff'); if(woff){const days=['일','월','화','수','목','금','토']; woff.innerHTML=days.map((d,i)=>`<label class="px-2.5 py-1 rounded-full border text-[12px] ${weeklyOff.includes(i)?'bg-black text-white':''}"><input type="checkbox" class="hidden" onchange="toggleWeek(${i})">${d}</label>`).join('');}
+  const chip=$('offDateChips'); if(chip) chip.innerHTML=specificOff.map(d=>`<span class="px-2 py-1 bg-zinc-100 rounded-full text-[11px]">${d} <button onclick="removeOffDate('${d}')">x</button></span>`).join('');
+}
+
+function addOffDate(){const v=$('offDateInput').value; if(!v) return; if(!specificOff.includes(v)) specificOff.push(v); localStorage.setItem('specificOff',JSON.stringify(specificOff)); renderGoal();}
+function removeOffDate(d){specificOff=specificOff.filter(x=>x!==d); localStorage.setItem('specificOff',JSON.stringify(specificOff)); renderGoal();}
+function saveGoal(){monthlyGoal=parseInt($('goalInput').value||0); localStorage.setItem('monthly_goal',String(monthlyGoal)); renderGoal();}
+
+function renderAnalDaily(){
+  const today=logs.filter(l=>l.date===todayKey());
+  const restToday=restLogs.filter(r=>r.date===todayKey());
+  const totalFare=today.reduce((s,l)=>s+l.fare,0), totalRide=today.reduce((s,l)=>s+l.rideMs,0), totalEmpty=today.reduce((s,l)=>s+l.emptyMs,0), totalRest=restToday.reduce((s,r)=>s+r.durationMs,0);
+  const avgFare=today.length?Math.round(totalFare/today.length):0;
+  $('dailyTitle').textContent=`일간 - ${todayKey()} (${today.length}건)`;
+  $('dailyStats').innerHTML=`<div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">매출</div><div class="font-black">${totalFare.toLocaleString()}원</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">평균요금</div><div class="font-black">${avgFare.toLocaleString()}원</div></div><div class="bg-blue-50 p-2 rounded-xl"><div class="text-zinc-400">유상</div><div class="font-black">${Math.round(totalRide/60000)}분</div></div><div class="bg-orange-50 p-2 rounded-xl"><div class="text-zinc-400">공차</div><div class="font-black">${Math.round(totalEmpty/60000)}분</div></div>`;
+  let hours=Array(24).fill(0); today.forEach(l=>{hours[new Date(l.boardingTime).getHours()]+=l.fare;}); let max=Math.max(...hours,1);
+  $('dailyHourBars').innerHTML=hours.map((v,h)=> v? `<div class="flex items-center gap-2 text-[11px]"><span class="w-8">${h}시</span><div class="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden"><div class="h-full bg-[#facc15]" style="width:${v/max*100}%"></div></div><span class="w-10 text-right">${(v/1000).toFixed(0)}k</span></div>`:'').join('')||'<div class="text-[11px] text-zinc-400">데이터 없음</div>';
+  $('dailyEff').innerHTML=`<div class="bg-white border p-2 rounded-xl"><div>유상률</div><div class="font-black">${totalRide+totalEmpty?Math.round(totalRide/(totalRide+totalEmpty)*100):0}%</div></div><div class="bg-white border p-2 rounded-xl"><div>휴식</div><div class="font-black">${Math.round(totalRest/60000)}분</div></div><div class="bg-white border p-2 rounded-xl"><div>건당 유상</div><div class="font-black">${today.length?Math.round(totalRide/today.length/60000):0}분</div></div>`;
+}
+function renderAnalWeekly(){
+  const {start,end}=getWeekRange();
+  const weekLogs=logs.filter(l=>{let d=new Date(l.boardingTime); return d>=start && d<=end;});
+  const weekRest=restLogs.filter(r=>{let d=new Date(r.start); return d>=start && d<=end;});
+  let byDay={}; for(let i=0;i<7;i++){let d=new Date(start); d.setDate(start.getDate()+i); let key=d.toISOString().slice(0,10); byDay[key]={fare:0,count:0};} weekLogs.forEach(l=>{let k=new Date(l.boardingTime).toISOString().slice(0,10); if(byDay[k]){byDay[k].fare+=l.fare; byDay[k].count++;}});
+  let totalFare=weekLogs.reduce((s,l)=>s+l.fare,0); let max=Math.max(...Object.values(byDay).map(v=>v.fare),1);
+  $('weeklyTitle').textContent=`주간 - ${start.toISOString().slice(0,10)} ~ ${end.toISOString().slice(0,10)} (${weekLogs.length}건)`;
+  $('weeklyStats').innerHTML=`<div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">주간 매출</div><div class="font-black">${totalFare.toLocaleString()}원</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">일평균</div><div class="font-black">${Math.round(totalFare/7).toLocaleString()}원</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">건수</div><div class="font-black">${weekLogs.length}건</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">휴식</div><div class="font-black">${Math.round(weekRest.reduce((s,r)=>s+r.durationMs,0)/60000)}분</div></div>`;
+  $('weeklyBars').innerHTML=Object.entries(byDay).map(([k,v])=>{let d=new Date(k); let label=['일','월','화','수','목','금','토'][d.getDay()]; return `<div class="flex items-center gap-2 text-[11px]"><span class="w-14">${k.slice(5)}(${label})</span><div class="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden"><div class="h-full bg-black" style="width:${v.fare/max*100}%"></div></div><span class="w-16 text-right">${v.fare.toLocaleString()}원 ${v.count}건</span></div>`;}).join('');
+  $('weeklyEff').innerHTML=`총 유상 ${Math.round(weekLogs.reduce((s,l)=>s+l.rideMs,0)/60000)}분 / 공차 ${Math.round(weekLogs.reduce((s,l)=>s+l.emptyMs,0)/60000)}분`;
+}
+function renderAnalMonthly(){
+  const {start,end}=getMonthRange();
+  const monthLogs=logs.filter(l=>{let d=new Date(l.boardingTime); return d>=start && d<=end;});
+  const monthRest=restLogs.filter(r=>{let d=new Date(r.start); return d>=start && d<=end;});
+  let totalFare=monthLogs.reduce((s,l)=>s+l.fare,0); let acc=totalFare;
+  let byWeek={}; monthLogs.forEach(l=>{let d=new Date(l.boardingTime); let week=Math.ceil(d.getDate()/7); byWeek[week]=(byWeek[week]||0)+l.fare;}); let maxW=Math.max(...Object.values(byWeek),1);
+  $('monthlyTitle').textContent=`월간 - ${start.getFullYear()}년 ${start.getMonth()+1}월 (${monthLogs.length}건)`;
+  $('monthlyStats').innerHTML=`<div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">월 매출</div><div class="font-black">${totalFare.toLocaleString()}원</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">목표 달성</div><div class="font-black">${Math.min(100,Math.round(totalFare/monthlyGoal*100))}%</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">일평균</div><div class="font-black">${Math.round(totalFare/(new Date().getDate())) .toLocaleString()}원</div></div><div class="bg-zinc-50 p-2 rounded-xl"><div class="text-zinc-400">휴식</div><div class="font-black">${Math.round(monthRest.reduce((s,r)=>s+r.durationMs,0)/60000)}분</div></div>`;
+  $('monthlyBars').innerHTML=Object.entries(byWeek).map(([w,v])=>`<div class="flex items-center gap-2 text-[11px]"><span class="w-12">${w}주차</span><div class="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden"><div class="h-full bg-[#facc15]" style="width:${v/maxW*100}%"></div></div><span class="w-16 text-right">${v.toLocaleString()}원</span></div>`).join('')||'데이터 없음';
+  $('monthlyWeekBars').innerHTML=Object.entries(byWeek).map(([w,v])=>`<div class="flex justify-between text-[11px]"><span>${w}주차</span><span class="font-bold">${v.toLocaleString()}원</span></div>`).join('');
+  let tags={}; monthLogs.forEach(l=>l.tags.forEach(t=>tags[t]=(tags[t]||0)+1)); $('monthlyTags').innerHTML=Object.entries(tags).map(([k,v])=>`<span class="px-2 py-1 bg-zinc-100 rounded-full text-[11px] font-bold">${k} ${v}</span>`).join('')||'태그 없음';
+}
+
+function saveSheetUrl(){let url=$('sheetUrl').value.trim(); if(!url) return; localStorage.setItem('sheet_webapp_url',url); sheetUrl=url; refreshStatus(); $('sheetTestResult').textContent='✅ 저장됨';}
+function backupToSheet(data,type){
+  if(!sheetUrl) return;
+  let payload={};
+  if(type==='ride'){payload={type:'ride', date:data.date, boardingTime:new Date(data.boardingTime).toISOString(), alightingTime:new Date(data.alightingTime).toISOString(), boardingAddr:data.boardingAddr, alightingAddr:data.alightingAddr, boardingLat:data.boardingLat, boardingLng:data.boardingLng, alightingLat:data.alightingLat, alightingLng:data.alightingLng, rideMs:data.rideMs, emptyMs:data.emptyMs, dist:data.dist, fare:data.fare, pay:data.pay, tags:data.tags, memo:data.memo};}
+  else if(type==='rest'){payload={type:'rest', date:data.date, start:new Date(data.start).toISOString(), end:new Date(data.end).toISOString(), restType:data.type, durationMs:data.durationMs, memo:data.memo};}
+  else if(type==='operation'){payload={type:'operation', date:data.date, opStart:data.opStart, durationMs:data.durationMs, memo:data.memo};}
+  fetch(sheetUrl,{method:'POST', mode:'no-cors', body:JSON.stringify(payload)});
+}
+
+refreshStatus(); renderLogs(); renderGoal(); renderAnalDaily(); setTimeout(()=>{ try{ updateCombinedView(); }catch(e){} }, 500);
+</script>
+
+<script>
+// auto inject sheet url if not set
+if(!localStorage.getItem('sheet_webapp_url')){
+  localStorage.setItem('sheet_webapp_url','https://script.google.com/macros/s/AKfycbz44zNZxrDIw_R-gjboRiJzT6eoi-ImHaVChYzj-athLebPYJs6H-wyPuAjtnygzrUh2w/exec');
+}
+</script>
+<script id="forceLightStart">(function(){try{localStorage.setItem("darkMode","0");document.documentElement.classList.remove("dark");document.body.classList.remove("dark");var w=document.getElementById("calWrapper");var ic=document.getElementById("calToggleIcon");var co=localStorage.getItem("calOpen");if(w){if(co=="0"){w.classList.add("hidden");if(ic)ic.textContent="▶";}else{w.classList.remove("hidden");if(ic)ic.textContent="▼";}}var at=localStorage.getItem("activeTab")||"drive";if(typeof switchTab==="function")switchTab(at);}catch(e){}})();</script></body>
+</html>
